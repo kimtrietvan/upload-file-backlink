@@ -41,7 +41,7 @@ func UploadFileToBucket(bucketName string, filepath string, body string, client 
 // }
 
 func postFileToBucket(c echo.Context) error {
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(os.Getenv("REGION")))
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(os.Getenv("AWS_REGION")))
 	if err != nil {
 		fmt.Printf("Error %s\n", err)
 	}
