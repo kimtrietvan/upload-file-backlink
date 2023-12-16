@@ -10,8 +10,14 @@ import (
 	"os"
 	"strings"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/blob"
+
+	// "github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/internal/generated"
+
+	// "github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/internal/generated"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -27,6 +33,7 @@ func UploadFileToBucket(bucketName string, filepath string, body string, client 
 		Key:    aws.String(filepath),
 		Body:   fileContent,
 		ACL:    "public-read",
+		// Metadata:,
 	})
 	if err != nil {
 		panic(err)
@@ -93,10 +100,25 @@ func postFileToBlob(c echo.Context) error {
 	}
 
 	fileContentBytes := []byte(fileContent)
-	_, err = client.UploadBuffer(ctx, containerName, filePath, fileContentBytes, &azblob.UploadBufferOptions{})
+	_, err = client.UploadBuffer(ctx, containerName, filePath, fileContentBytes, &azblob.UploadBufferOptions{
+		HTTPHeaders: &blob.HTTPHeaders{
+			BlobContentType: to.Ptr("text/html"),
+		},
+	})
 	if err != nil {
 		panic(err)
 	}
+	// defer url
+
+	// u := fmt.Sprintf("https://%s.blob.core.windows.net/%s/%s", os.Getenv("AZURE_STORAGE_ACCOUNT"), containerName, filePath)
+	// blobClient, err := azblob.NewClient(u, credential, nil)
+	// blobClient.ServiceClient().GetProperties(ctx, nil)
+
+	// fmt.Printf("blobClient: %v\n", blobClient)
+	// paper, err := client.ServiceClient().GetProperties(ctx, &service.GetPropertiesOptions{})
+
+	// pipeline := client.(context.Background(), nil, nil)
+	// container = client.ServiceClient()
 
 	return c.String(http.StatusOK, "")
 }
