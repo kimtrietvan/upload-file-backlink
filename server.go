@@ -29,10 +29,11 @@ import (
 func UploadFileToBucket(bucketName string, filepath string, body string, client *s3.Client) {
 	fileContent := strings.NewReader(body)
 	_, err := client.PutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(filepath),
-		Body:   fileContent,
-		ACL:    "public-read",
+		Bucket:      aws.String(bucketName),
+		Key:         aws.String(filepath),
+		Body:        fileContent,
+		ACL:         "public-read",
+		ContentType: to.Ptr("text/html"),
 		// Metadata:,
 	})
 	if err != nil {
