@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="css/bulma.css">
+    <style>
+        nav ul li button {
+            display: none; /* Hide the button initially */
+        }
+
+        nav ul li:hover button {
+            display: inline-block; /* Show the button on hover */
+        }
+
+    </style>
+    <title>{{ .Title }}</title>
+</head>
+<body>
+    <div style="width: 33%;">
+        <button onclick="add()">Add</button>
+        <nav>
+            <ul>
+              <!-- <li>
+                <a href="#">Home</a>
+              </li> -->
+              {{range .TemplateIDs}}
+              <li>
+                <a style="color: inherit; text-decoration:none;" data-id="{{ .TemplateID }}" href="/template/{{ .TemplateID }}">{{ .TemplateName }}</a>
+                <button data-id="{{ .TemplateID }}" onclick="rename(this)" class="hover-button">Rename</button>
+                <button data-id="{{ .TemplateID }}" class="hover-button">Copy</button>
+                <button data-id="{{ .TemplateID }}" onclick="remove(this)" class="hover-button">Remove</button>
+              </li>
+              {{end}}
+              
+            </ul>
+          </nav>
+    <div>
+      
+    </div>
+    <script>
+      async function add() {
+            let name = prompt("Name")
+            if (name == null) {
+                return
+            }
+            const response = await fetch(window.location.origin + '/template/' + name + "/add");
+            if (response.status == 200) {
+                window.location.reload()
+            }
+
+        }
+        function rename(el) {
+          let id = el.getAttribute("data-id")
+          let name = prompt("Name")
+          if (name == null) {
+            return
+          }
+          window.location = window.location.origin + '/template/' + id + '/rename/' + name 
+        }
+      async function remove(el) {
+            let id = el.getAttribute("data-id")
+            const response = await fetch(window.location.origin + '/template/' + id + "/delete");
+            if (response.status == 200) {
+              window.location = window.location.origin + '/template'
+            }
+
+        }
+    </script>
+</body>
+</html>

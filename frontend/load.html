@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="/public/css/bulma.css">
+    <style>
+        nav ul li button {
+            display: none; /* Hide the button initially */
+        }
+
+        nav ul li:hover button {
+            display: inline-block; /* Show the button on hover */
+        }
+        /* The Modal (background) */
+        .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content/Box */
+        .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Could be more or less, depending on screen size */
+        }
+
+        /* The Close Button */
+        .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+        }
+
+    </style>
+    <link rel="stylesheet" href="/public/richtexteditor/rte_theme_default.css" />
+    <script type="text/javascript" src="/public/richtexteditor/rte.js"></script>
+    <script type="text/javascript" src='/public/richtexteditor/plugins/all_plugins.js'></script>
+    <title>{{ .Title }}</title>
+</head>
+<body>
+    <!-- Trigger/Open The Modal -->
+    <!-- <button id="myBtn">Open Modal</button> -->
+
+    <!-- The Modal -->
+    <div id="awsModal" class="modal">
+
+    <!-- Modal content -->
+        <div class="modal-content">
+            <span class="awsclose close">&times;</span>
+            <!-- <form onsubmit="awsUpload()" method="get"> -->
+                <input type="text" id="bucket" name="bucket" placeholder="Bucket name">
+                <input type="text" id="aws-filepath" name="filepath" placeholder="File path">
+                <input type="text" id="region" name="region" placeholder="Region">
+                <button onclick="awsUpload()" class="button">Upload</button>
+            <!-- </form> -->
+        </div>
+
+    </div>
+    <div id="azureModal" class="modal">
+
+        <!-- Modal content -->
+            <div class="modal-content">
+                <span class="azureclose close">&times;</span>
+                <!-- <form onsubmit="awsUpload()" method="get"> -->
+                    <input type="text" id="container" name="bucket" placeholder="Container name">
+                    <input type="text" id="azure-filepath" name="filepath" placeholder="File path">
+                    <button onclick="awsUpload()" class="button">Upload</button>
+                <!-- </form> -->
+            </div>
+    
+        </div>
+    <div class="columns">
+        <div class="column is-one-quarter">
+            <button onclick="add()">Add</button>
+            <nav>
+                <ul>
+                  <!-- <li>
+                    <a href="#">Home</a>
+                  </li> -->
+                  {{range .TemplateIDs}}
+                  <li>
+                    <a style="color: inherit; text-decoration:none;" data-id="{{ .TemplateID }}" href="/template/{{ .TemplateID }}">{{ .TemplateName }}</a>
+                    <button data-id="{{ .TemplateID }}" onclick="rename(this)" class="hover-button">Rename</button>
+                    <button data-id="{{ .TemplateID }}" class="hover-button">Copy</button>
+                    <button data-id="{{ .TemplateID }}" onclick="remove(this)" class="hover-button">Remove</button>
+                  </li>
+                  {{end}}
+                  
+                </ul>
+              </nav>
+       
+    </div>
+    <div class="column">
+        <form action="/template/{{ .CurrentID }}/update" method="post">
+            <h1> {{ .CurrentName }} templete edit</h1> 
+            <!-- <form action="/template/{{ .CurrentID }}/update" method="post"></form> -->
+            <h2>TITLE edit</h2>
+            <textarea name="templateTitle" id="">{{ .CurrentTitle }}</textarea>
+            <h2>BODY edit</h2>
+            <textarea name="templateData" id="data">{{ .CurrentData }}</textarea>
+            <input class="button" type="submit" value="Update">
+            
+        </form>
+        <button class="button" id="aws_button">AWS Upload</button>
+        <button class="button" id="azure_button">Azure Upload</button>
+    </div>
+    
+    </div>
+
+      <script>
+        // var editor1 = new RichTextEditor("#title");
+        var editor2 = new RichTextEditor("#data");
+    </script>
+    <script>
+        async function add() {
+            let name = prompt("Name")
+            if (name == null) {
+                return
+            }
+            const response = await fetch(window.location.origin + '/template/' + name + "/add");
+            if (response.status == 200) {
+                window.location.reload()
+            }
+
+        }
+        function rename(el) {
+          let id = el.getAttribute("data-id")
+          let name = prompt("Name")
+          if (name == null) {
+            return
+          }
+          window.location = window.location.origin + '/template/' + id + '/rename/' + name 
+        }
+        async function remove(el) {
+            let id = el.getAttribute("data-id")
+            const response = await fetch(window.location.origin + '/template/' + id + "/delete");
+            if (response.status == 200) {
+                window.location = window.location.origin + '/template'
+            }
+
+        }
+      </script>
+      <script>
+        var awsmodal = document.getElementById("awsModal");
+
+        // Get the button that opens the modal
+        var awsbtn = document.getElementById("aws_button");
+
+        // Get the <span> element that closes the modal
+        var span1 = document.getElementsByClassName("awsclose")[0];
+
+
+        var azuremodal = document.getElementById("azureModal");
+
+        // Get the button that opens the modal
+        var azurebtn = document.getElementById("azure_button");
+
+        // Get the <span> element that closes the modal
+        var span2 = document.getElementsByClassName("azureclose")[0];
+
+        // When the user clicks on the button, open the modal
+        awsbtn.onclick = function() {
+            awsmodal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span1.onclick = function() {
+            awsmodal.style.display = "none";
+        }
+
+        azurebtn.onclick = function() {
+            azuremodal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+            span2.onclick = function() {
+                azuremodal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+        if (event.target == awsmodal) {
+            awsmodal.style.display = "none";
+        }
+        if (event.target == azuremodal) {
+            azuremodal.style.display = "none";
+        }
+        }
+      </script>
+      <script>
+        async function awsUpload() {
+            var bucket = document.getElementById('bucket').value
+            var filepath = document.getElementById('aws-filepath').value
+            var region = document.getElementById('region').value
+            var url = window.location.origin + "/aws/" + bucket + "/" + btoa(filepath) + "/" + region + "/{{ .CurrentID }}"
+            const response = await fetch(url)
+        }
+        async function awsUpload() {
+            var container = document.getElementById('container').value
+            var filepath = document.getElementById('azure-filepath').value
+            // var region = document.getElementById('region').value
+            var url = window.location.origin + "/azure/" + container + "/" + btoa(filepath) + "/{{ .CurrentID }}"
+            const response = await fetch(url)
+        }
+      </script>
+</body>
+</html>
