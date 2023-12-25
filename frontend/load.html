@@ -215,6 +215,12 @@
             var region = document.getElementById('region').value
             var url = window.location.origin + "/aws/" + bucket + "/" + btoa(filepath) + "/" + region + "/{{ .CurrentID }}"
             const response = await fetch(url)
+            if (response.status == 200) {
+                alert('https://s3.' + region + '.amazonaws.com/' + bucket + '/' + filepath)
+            }
+            else {
+                alert("Failed!")
+            }
         }
         async function azureUpload() {
             var container = document.getElementById('container').value
@@ -222,6 +228,12 @@
             // var region = document.getElementById('region').value
             var url = window.location.origin + "/azure/" + container + "/" + btoa(filepath) + "/{{ .CurrentID }}"
             const response = await fetch(url)
+            if (response.status == 200) {
+                alert('Successfully!')
+            }
+            else {
+                alert("Failed!")
+            }
         }
       </script>
 </body>
