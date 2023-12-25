@@ -85,7 +85,7 @@
                 <!-- <form onsubmit="awsUpload()" method="get"> -->
                     <input type="text" id="container" name="bucket" placeholder="Container name">
                     <input type="text" id="azure-filepath" name="filepath" placeholder="File path">
-                    <button onclick="awsUpload()" class="button">Upload</button>
+                    <button onclick="azureUpload()" class="button">Upload</button>
                 <!-- </form> -->
             </div>
     
@@ -216,7 +216,7 @@
             var url = window.location.origin + "/aws/" + bucket + "/" + btoa(filepath) + "/" + region + "/{{ .CurrentID }}"
             const response = await fetch(url)
         }
-        async function awsUpload() {
+        async function azureUpload() {
             var container = document.getElementById('container').value
             var filepath = document.getElementById('azure-filepath').value
             // var region = document.getElementById('region').value

@@ -28,7 +28,7 @@ type templateLoad struct {
 	TemplateIDs  []TemplateID
 	Title        string
 	CurrentID    string
-	CurrentData  string
+	CurrentData  template.HTML
 	CurrentName  string
 	CurrentTitle string
 }
@@ -89,7 +89,7 @@ func loadTemplate(c echo.Context) error {
 	}
 
 	dataPassing.CurrentID = result.TemplateID
-	dataPassing.CurrentData = result.TemplateData
+	dataPassing.CurrentData = template.HTML(result.TemplateData)
 	dataPassing.CurrentName = result.TemplateName
 	dataPassing.CurrentTitle = result.TemplateTitle
 	dataPassing.Title = result.TemplateName + "edit"
