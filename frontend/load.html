@@ -229,7 +229,7 @@
             var url = window.location.origin + "/azure/" + container + "/" + btoa(filepath) + "/{{ .CurrentID }}"
             const response = await fetch(url)
             if (response.status == 200) {
-                alert('Successfully!')
+                alert("https://kddastuff.blob.core.windows.net/" + container + '/' + filepath)
             }
             else {
                 alert("Failed!")
